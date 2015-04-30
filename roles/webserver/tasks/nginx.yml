@@ -1,0 +1,21 @@
+---
+- name: 1. Install nginx
+  apt: name=nginx state=present
+
+- name: 2. Remove default virtual host
+  file:
+    path=/etc/nginx/sites-enabled/default
+    state=absent
+
+- name: 3. Install the default virtual host
+  template:
+    src=wordpress-vhost.conf.j2
+    dest=/etc/nginx/sites-available/wordpress-vhost.conf
+
+- name: 4. Enable new vagrant virtual host
+  file:
+    src=/etc/nginx/sites-available/wordpress-vhost.conf
+    dest=/etc/nginx/sites-enabled/wordpress-vhost.conf
+    state=link
+  notify:
+    - restart nginx

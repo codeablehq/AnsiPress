@@ -1,0 +1,11 @@
+---
+- name: start nginx
+  service: name=nginx state=started
+- name: restart nginx
+  service: name=nginx state=restarted
+- name: reload nginx
+  service: name=nginx state=reloaded
+- name: restart hhvm
+  action: service name=hhvm state=restarted enabled=yes
+- name: reload hhvm
+  action: service name=hhvm state=reloaded enabled=yes

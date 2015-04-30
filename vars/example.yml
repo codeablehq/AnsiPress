@@ -1,0 +1,25 @@
+---
+# file: vars/vagrant
+server_user: webmaster
+server_user_password: webmaster
+
+wordpress_site_url: vagrant # so that you can access your site at http://vagrant/
+wordpress_site_domain: example.com # for folder name
+wordpress_site_name: Awesome website!
+
+wordpress_admin_user: Superuser
+wordpress_admin_password: correcthorsebatterystaple # https://xkcd.com/936/
+wordpress_admin_email: user@example.com
+
+wordpress_db_name: wordpress
+wordpress_db_username: wordpressuser
+wordpress_db_password: password
+wordpress_db_encoding: utf8
+wordpress_db_collation: utf8_unicode_ci
+
+mysql_root_password: mysql
+
+smtp_email: example@gmail.com # Needs to be Gmail (temporarily)
+smtp_password: password
+
+document_root: "/home/{{ server_user }}/www/{{ wordpress_site_domain }}"

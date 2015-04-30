@@ -1,0 +1,9 @@
+---
+- name: Install common utilies
+  apt: name={{ item }} state=latest
+  with_items:
+    - sysvinit-utils
+    - unzip
+    - imagemagick
+
+- include: users.yml

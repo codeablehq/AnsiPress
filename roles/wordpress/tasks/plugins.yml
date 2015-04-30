@@ -1,0 +1,47 @@
+---
+- name: Remove the default "Hello Dolly"
+  sudo_user: "{{ server_user }}"
+  register: plugin_installed
+  changed_when: plugin_installed.rc != 0
+  shell: wp plugin delete hello
+  args:
+    chdir: "{{ document_root }}"
+
+- name: WordPress SEO by Yoast
+  sudo_user: "{{ server_user }}"
+  register: plugin_installed
+  changed_when: plugin_installed.rc != 0
+  shell: wp plugin install wordpress-seo
+  args:
+    chdir: "{{ document_root }}"
+
+- name: Rublon (2-factor authentication)
+  sudo_user: "{{ server_user }}"
+  register: plugin_installed
+  changed_when: plugin_installed.rc != 0
+  shell: wp plugin install rublon
+  args:
+    chdir: "{{ document_root }}"
+
+- name: iThemes Security (formerly Better WP Security)
+  sudo_user: "{{ server_user }}"
+  register: plugin_installed
+  changed_when: plugin_installed.rc != 0
+  shell: wp plugin install better-wp-security
+  args:
+    chdir: "{{ document_root }}"
+
+- name: WP Redis (Fast object cache)
+  sudo_user: "{{ server_user }}"
+  register: plugin_installed
+  changed_when: plugin_installed.rc != 0
+  shell: wp plugin install wp-redis
+  args:
+    chdir: "{{ document_root }}"
+
+- name: WP Redis - copy object cache file in place
+  sudo_user: "{{ server_user }}"
+  file:
+    src: "{{ document_root }}/wp-content/plugins/wp-redis/object-cache.php"
+    dest: "{{ document_root }}/wp-content/object-cache.php"
+    state: link

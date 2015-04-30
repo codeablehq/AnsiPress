@@ -1,0 +1,11 @@
+set daemon 20
+
+set mailserver smtp.gmail.com port 587
+  username "{{ smtp_email }}" password "{{ smtp_password }}"
+  using tlsv1
+
+set alert {{ smtp_email }} with reminder on 15 cycles
+
+set httpd port 2812 and
+  use address localhost
+  allow localhost

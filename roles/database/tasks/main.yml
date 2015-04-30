@@ -1,0 +1,7 @@
+---
+- name: Install redis
+  apt: name={{ item }} state=latest
+  with_items:
+    - redis-server
+
+- include: mariadb.yml

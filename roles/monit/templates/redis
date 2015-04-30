@@ -1,0 +1,10 @@
+check process redis-server with pidfile /var/run/redis/redis-server.pid
+  group redis
+  start program = "/usr/sbin/service redis-server start"
+  stop program = "/usr/sbin/service redis-server stop"
+  if 2 restarts within 3 cycles then timeout
+  if totalmem > 100 Mb then alert
+  if children > 255 for 5 cycles then stop
+  if cpu usage > 95% for 3 cycles then restart
+  if failed host 127.0.0.1 port 6379 then restart
+  if 5 restarts within 5 cycles then timeout

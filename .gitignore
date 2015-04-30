@@ -1,0 +1,5 @@
+.vagrant
+
+vars/*
+
+!vars/example.yml

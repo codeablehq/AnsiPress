@@ -1,0 +1,7 @@
+check process hhvm with pidfile /var/run/hhvm/pid
+  group hhvm
+  start program = "/bin/bash -c '/bin/rm -f /var/run/hhvm/hhvm.sock; /usr/sbin/service hhvm start'"
+  stop program  = "/usr/sbin/service hhvm stop"
+  if failed unixsocket /var/run/hhvm/hhvm.sock then restart
+  if mem > 800.0 MB for 1 cycles then restart
+  if 5 restarts with 5 cycles then timeout

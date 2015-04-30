@@ -1,0 +1,4 @@
+check system server
+  if memory > 85% 2 times within 3 cycles then alert
+  if cpu(user) > 75% for 2 cycles then alert
+  if cpu(system) > 65% for 2 cycles then alert
