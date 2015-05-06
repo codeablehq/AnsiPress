@@ -1,12 +1,12 @@
 ---
-- name: 1. Create empty database for WordPress
+- name: Create empty database for WordPress
   mysql_db:
     name: "{{ wordpress_db_name }}"
     encoding: "{{ wordpress_db_encoding }}"
     collation: "{{ wordpress_db_collation }}"
     state: present
 
-- name: 2. Create mysql user for WordPress
+- name: Create MySQL user for WordPress
   mysql_user:
     name: "{{ wordpress_db_username }}"
     password: "{{ wordpress_db_password }}"

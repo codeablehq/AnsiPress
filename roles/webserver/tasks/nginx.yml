@@ -1,21 +1,37 @@
 ---
-- name: 1. Install nginx
-  apt: name=nginx state=present
+- name: Install nginx
+  apt: name=nginx state=present update_cache=yes
 
-- name: 2. Remove default virtual host
+- name: Remove default virtual host
   file:
-    path=/etc/nginx/sites-enabled/default
-    state=absent
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
 
-- name: 3. Install the default virtual host
+- name: Install the default virtual host
   template:
-    src=wordpress-vhost.conf.j2
-    dest=/etc/nginx/sites-available/wordpress-vhost.conf
+    src: vhost.conf.j2
+    dest: "/etc/nginx/sites-available/{{ wordpress_site_domain }}.conf"
 
-- name: 4. Enable new vagrant virtual host
+- name: Create certificate directory
   file:
-    src=/etc/nginx/sites-available/wordpress-vhost.conf
-    dest=/etc/nginx/sites-enabled/wordpress-vhost.conf
-    state=link
+    path: "{{ ssl_direcory }}"
+    state: "directory"
+    owner: "{{ server_user }}"
+
+- name: Copy certificates into place
+  synchronize:
+    src: "../certs/{{ item }}"
+    dest: "{{ ssl_direcory }}/{{ item }}"
+  with_items:
+   - "{{ ssl_key }}"
+   - "{{ ssl_cert }}"
+   - "{{ ssl_dhparam }}"
+  when: ssl
+
+- name: Enable new vagrant virtual host
+  file:
+    src: "/etc/nginx/sites-available/{{ wordpress_site_domain }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ wordpress_site_domain }}.conf"
+    state: link
   notify:
-    - restart nginx
+    - reload nginx

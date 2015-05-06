@@ -1,5 +1,7 @@
 .vagrant
 
-vars/*
+roles/webserver/certs/*
+!roles/webserver/certs/.keep
 
-!vars/example.yml
+group_vars/*
+!group_vars/example.yml

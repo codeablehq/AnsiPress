@@ -1,0 +1,72 @@
+---
+- hosts: all
+  user: root
+  gather_facts: false
+
+  handlers:
+    - name: Restart SSH
+      service: name=ssh state=restarted
+
+  tasks:
+    - name: Test for root user
+      shell: "ssh root@{{ inventory_hostname }} 'echo success'"
+      delegate_to: 127.0.0.1
+      register: can_login_with_root
+      ignore_errors: true
+
+    - name: 2. Create the admin group
+      group:
+        name: "admin"
+        state: "present"
+      when: can_login_with_root|success
+
+    - name: 3. Create a webmaster user in the admin group
+      user:
+        name: "{{ server_user }}"
+        comment: "Server User (non-root)"
+        password: "{{ server_user_password }}"
+        group: "admin"
+        shell: "/bin/bash"
+      when: can_login_with_root|success
+
+    - name: 4. Copy local ssh key for webmaster user
+      authorized_key:
+        user: "{{ server_user }}"
+        key: "{{ lookup('file', server_user_ssh_key) }}"
+      when: can_login_with_root|success
+
+    - name: 5. Prevent password authentication
+      lineinfile:
+        dest: "/etc/ssh/sshd_config"
+        regexp: "^PasswordAuthentication"
+        line: "PasswordAuthentication no"
+        state: "present"
+      notify:
+        - Restart SSH
+      when: can_login_with_root|success
+
+    - name: 6. Prevent root SSH access
+      lineinfile:
+        dest: "/etc/ssh/sshd_config"
+        regexp: "^PermitRootLogin"
+        line: "PermitRootLogin no"
+        state: present
+      notify:
+        - Restart SSH
+      when: can_login_with_root|success
+
+    - name: 7.1 Setup ufw (port 22 for SSH)
+      shell: "ufw allow 22/tcp"
+      when: can_login_with_root|success
+
+    - name: 7.2 Setup ufw (port 443 for HTTPS)
+      shell: "ufw allow 443/tcp"
+      when: can_login_with_root|success
+
+    - name: 7.3 Setup ufw (port 80 for HTTP)
+      shell: "ufw allow 80/tcp"
+      when: can_login_with_root|success
+
+    - name: 7.4 Enable ufw
+      shell: "echo 'y' | ufw enable"
+      when: can_login_with_root|success

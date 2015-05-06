@@ -1,16 +1,16 @@
 ---
-- name: 1. Install HHVM gpg key
+- name: Install HHVM gpg key
   apt_key: keyserver=keyserver.ubuntu.com id=0x5a16e7281be7a449
 
-- name: 2. Add HHVM deb repository
+- name: Add HHVM deb repository
   apt_repository:
     repo: "deb http://dl.hhvm.com/ubuntu trusty main"
     state: present
 
-- name: 3. Install HHVM packages
+- name: Install HHVM packages
   apt: name=hhvm state=latest update_cache=yes
 
-- name: 4. Copy HHVM configuration
+- name: Copy HHVM configuration
   template:
     src: hhvm.ini.j2
     dest: /etc/hhvm/server.ini

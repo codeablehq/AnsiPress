@@ -6,6 +6,6 @@
 - name: reload nginx
   service: name=nginx state=reloaded
 - name: restart hhvm
-  action: service name=hhvm state=restarted enabled=yes
+  action: service name=hhvm state=restarted
 - name: reload hhvm
-  action: service name=hhvm state=reloaded enabled=yes
+  action: service name=hhvm state=reloaded

@@ -1,6 +1,6 @@
 ---
 - name: 1. Install MySQL (MariaDB) client and server
-  apt: name={{ item }} state=latest
+  apt: name={{ item }} state=latest update_cache=yes
   with_items:
     - python-mysqldb
     - mariadb-client

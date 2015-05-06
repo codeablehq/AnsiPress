@@ -1,39 +1,39 @@
 ---
-- name: 1. Download WP-CLI and set executable permissions
+- name: Download WP-CLI and set executable permissions
   get_url:
     url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
     dest: /usr/local/bin/wp
     mode: a+x
 
-- name: 2. Create WordPress root directory
+- name: Create WordPress root directory
   file:
     path: "{{ document_root }}"
     state: "directory"
     owner: "{{ server_user }}"
     group: "admin"
 
-- name: 3. Download WordPress with WP-CLI
+- name: Download WordPress with WP-CLI
   sudo_user: "{{ server_user }}"
   shell: "wp core download --path={{ document_root }}"
   args:
     creates: "{{ document_root }}/index.php"
 
-- name: 4. Create wp-config.php with WP-CLI
+- name: Create wp-config.php with WP-CLI
   sudo_user: "{{ server_user }}"
   shell: "wp core config --dbname={{ wordpress_db_name }} --dbuser={{ wordpress_db_username }} --dbpass={{ wordpress_db_password }}"
   args:
     chdir: "{{ document_root }}"
     creates: wp-config.php
 
-- name: 5. Install WordPress with WP-CLI
+- name: Install WordPress with WP-CLI
   sudo_user: "{{ server_user }}"
   register: install_result
-  shell: "if ! $(wp core is-installed); then wp core install --title='{{ wordpress_site_name }}' --url='{{ wordpress_site_url }}' --admin_user='{{ wordpress_admin_user }}' --admin_password='{{ wordpress_admin_password }}' --admin_email='{{ wordpress_admin_email }}'; fi"
+  shell: "if ! $(wp core is-installed); then wp core install --title='{{ wordpress_site_name }}' --url='{{ wordpress_site_domain }}' --admin_user='{{ wordpress_admin_user }}' --admin_password='{{ wordpress_admin_password }}' --admin_email='{{ wordpress_admin_email }}'; fi"
   args:
     chdir: "{{ document_root }}"
   changed_when: "install_result.rc != 0"
 
-- name: 6. Set proper permissions to uploads directory
+- name: Set proper permissions to uploads directory
   file:
     path: "{{ document_root }}/wp-content/uploads"
     state: directory

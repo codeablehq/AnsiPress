@@ -1,14 +1,14 @@
 ---
-- name: 1. Install Monit
-  apt: name=monit state=latest
+- name: Install Monit
+  apt: name=monit state=latest update_cache=yes
 
-- name: 2. Copy Monit configuration file
+- name: Copy Monit configuration file
   template:
     src: config.j2
     dest: "/etc/monit/conf.d/config"
     mode: 0600
 
-- name: 3. Copy daemon configuration files
+- name: Copy daemon configuration files
   template:
     src: "{{ item }}"
     dest: "/etc/monit/conf.d/{{ item }}"

@@ -45,3 +45,15 @@
     src: "{{ document_root }}/wp-content/plugins/wp-redis/object-cache.php"
     dest: "{{ document_root }}/wp-content/object-cache.php"
     state: link
+
+- name: Install CSS/JS Concatenation
+  git:
+    repo: git://github.com/kasparsd/minit.git
+    dest: "{{ document_root }}/wp-content/plugins/minit"
+    accept_hostkey: True
+
+- name: Install CSS/JS Minification
+  git:
+    repo: git://github.com/bjornjohansen/minit-yui.git
+    dest: "{{ document_root }}/wp-content/plugins/minit-yui"
+    accept_hostkey: True

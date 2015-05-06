@@ -1,0 +1,8 @@
+---
+- name: Install vsFTPd
+  apt: name=vsftpd state=latest update_cache=yes
+
+- name: Copy vsFTPd configuration
+  template:
+    src: vsftpd.conf.j2
+    dest: /etc/vsftpd.conf

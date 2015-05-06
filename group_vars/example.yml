@@ -1,10 +1,12 @@
 ---
-# file: vars/vagrant
 server_user: webmaster
 server_user_password: webmaster
+server_user_ssh_key: "/Users/Username/.ssh/id_rsa.pub"
+server_user_home_dir: "/home/{{ server_user }}"
 
-wordpress_site_url: vagrant # so that you can access your site at http://vagrant/
-wordpress_site_domain: example.com # for folder name
+# so that you can access your site at http://vagrant/
+# DO NOT add any protocol or forward slashes
+wordpress_site_domain: vagrant
 wordpress_site_name: Awesome website!
 
 wordpress_admin_user: Superuser
@@ -21,5 +23,14 @@ mysql_root_password: mysql
 
 smtp_email: example@gmail.com # Needs to be Gmail (temporarily)
 smtp_password: password
+smtp_host: smtp.gmail.com
+smtp_port: 587
+smtp_domain: example.com
 
 document_root: "/home/{{ server_user }}/www/{{ wordpress_site_domain }}"
+
+ssl: true
+ssl_direcory: "/home/{{ server_user }}/certs"
+ssl_key: server.key
+ssl_cert: server.crt
+ssl_dhparam: dhparam.pem

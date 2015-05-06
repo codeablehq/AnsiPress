@@ -1,15 +1,12 @@
 ---
 - hosts: all
+  user: "{{ server_user }}"
   sudo: true
-  vars_files:
-    - vars/development.yml
-  pre_tasks:
-    - name: update apt cache
-      apt: update_cache=yes
   roles:
     - common
     - database
     - webserver
+    - ftp
     - monit
     - wordpress
   post_tasks:

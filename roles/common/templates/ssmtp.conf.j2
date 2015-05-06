@@ -1,0 +1,7 @@
+root={{ smtp_email }}
+mailhub={{ smtp_host }}:{{ smtp_port }}
+AuthUser={{ smtp_email }}
+AuthPass={{ smtp_password }}
+UseTLS=YES
+UseSTARTTLS=YES
+rewriteDomain={{ smtp_domain }}

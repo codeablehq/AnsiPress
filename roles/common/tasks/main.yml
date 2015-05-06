@@ -1,9 +1,16 @@
 ---
-- name: Install common utilies
-  apt: name={{ item }} state=latest
+- name: Install common utilities
+  apt: name={{ item }} state=latest update_cache=yes
   with_items:
-    - sysvinit-utils
-    - unzip
-    - imagemagick
+    - sysvinit-utils # So that 'service' command is accessible
+    - unzip # For uncompressing WordPress and plugins
+    - imagemagick # Image manipulation
+    - git # Source control
+    - openjdk-6-jre # Java runtime (if you do YUI asset minification)
+    - ssmtp # Simple email sending interface
+  sudo: yes
 
-- include: users.yml
+- name: Copy SSMTP configuration
+  template:
+    src: ssmtp.conf.j2
+    dest: /etc/ssmtp/ssmtp.conf
