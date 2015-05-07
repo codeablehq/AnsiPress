@@ -20,13 +20,13 @@ $ sudo pip install ansible
 You might want to try and update Ansible at this (optional) step:
 
 ```
-$ sudo pip install -upgrade ansible
+$ sudo pip install --upgrade ansible
 ```
 
 To verify it’s installed properly, run:
 
 ```
-$ ansible —version
+$ ansible --version
 ansible 1.9.0.1
 ```
 
