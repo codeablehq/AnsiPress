@@ -1,34 +1,47 @@
 ---
+# We need to create a non-root user that will own our WordPress files.
+# This is a security measure, and once the 'first_run.yml' is ran, the root
+# will not be able to SSH on the server - which is strongly recommended.
 server_user: webmaster
 server_user_password: webmaster
 server_user_ssh_key: "/Users/Username/.ssh/id_rsa.pub"
 server_user_home_dir: "/home/{{ server_user }}"
 
-# so that you can access your site at http://vagrant/
-# DO NOT add any protocol or forward slashes
-wordpress_site_domain: vagrant
+# Basic WordPress settings which WP-CLI uses to install WordPress automatically.
+# For the domain, DO NOT include the protocol (HTTP/HTTPS) nor forward slashes.
+wordpress_site_domain: example.com
 wordpress_site_name: Awesome website!
-
 wordpress_admin_user: Superuser
 wordpress_admin_password: correcthorsebatterystaple # https://xkcd.com/936/
 wordpress_admin_email: user@example.com
 
+# WordPress database settings
 wordpress_db_name: wordpress
 wordpress_db_username: wordpressuser
 wordpress_db_password: password
 wordpress_db_encoding: utf8
 wordpress_db_collation: utf8_unicode_ci
 
+# MySQL settings, we only need to set MySQL root password here.
 mysql_root_password: mysql
 
-smtp_email: example@gmail.com # Needs to be Gmail (temporarily)
+# SMTP settings in order to send email from the server. The example here is for
+# Google, but feel free to use any other SMTP service, like Mailgun.com
+smtp_email: example@gmail.com
 smtp_password: password
 smtp_host: smtp.gmail.com
 smtp_port: 587
 smtp_domain: example.com
 
+# Nginx settings, for now just the directory you want your WordPress site to be
+# served from. Keep in mind that the non-root user needs to be able to write to it.
 document_root: "/home/{{ server_user }}/www/{{ wordpress_site_domain }}"
 
+# SSL settings. If you want to serve your website through HTTPS, then you need to
+# upload certificates in roles/webserver/certs then change the names of the
+# certificates in the variables below. To generate dhparam.pem, run this command:
+# $ openssl dhparam 2048 -out roles/webserver/certs/dhparam.pem
+# Read more about it: https://wiki.mozilla.org/Security/Server_Side_TLS#DHE_handshake_and_dhparam
 ssl: true
 ssl_direcory: "/home/{{ server_user }}/certs"
 ssl_key: server.key
