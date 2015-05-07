@@ -1,47 +1,55 @@
 ---
-- name: 1. Install MySQL (MariaDB) client and server
+# Install MariaDB (a drop-in replacement for MySQL) packages, and since we're
+# using automated install, we also need Python's MySQL package
+- name: Install MySQL (MariaDB) client and server
   apt: name={{ item }} state=latest update_cache=yes
   with_items:
     - python-mysqldb
     - mariadb-client
     - mariadb-server
 
-- name: 2. Start MySQL service
+- name: Start MySQL service
   service:
     name: mysql
     state: started
     enabled: yes
 
-- name: 3. Get list of hosts for the root user.
+# Set up the root user; First we get all the hosts for it. This is important
+# because MySQL allows users to connect from different hosts - we need to make
+# sure we update all of them with the master password.
+- name: Get list of hosts for the root user.
   command: mysql -NBe 'SELECT Host FROM mysql.user WHERE User = "root" ORDER BY (Host="localhost") ASC'
   register: mysql_root_hosts
   changed_when: false
 
-- name: 4. Update MySQL root password for localhost root account.
+- name: Update MySQL root password for localhost root account.
   mysql_user:
     name: "root"
     host: "{{ item }}"
     password: "{{ mysql_root_password }}"
   with_items: mysql_root_hosts.stdout_lines
 
-- name: 5. Setup MariaDB creds for root user
+- name: Setup MariaDB creds for root user
   template:
     src: mysql.cnf.j2
     dest: /root/.my.cnf
     owner: root
     mode: 0600
 
-- name: 6. Get list of hosts for the anonymous user.
+# In order to remove MySQL anonymous users (they don't always exist, it's a
+# precaution) we need to run a custom MySQL command from the shell.
+- name: Get list of hosts for the anonymous user.
   command: mysql -NBe 'SELECT Host FROM mysql.user WHERE User = ""'
   register: mysql_anonymous_hosts
   changed_when: false
 
-- name: 7. Remove anonymous MySQL users.
+- name: Remove anonymous MySQL users.
   mysql_user:
     name: ""
     host: "{{ item }}"
     state: absent
   with_items: mysql_anonymous_hosts.stdout_lines
 
-- name: 8. Drop MySQL test database
+# MySQL also comes with a test database which is not needed, so let's drop it.
+- name: Drop MySQL test database
   mysql_db: name=test state=absent

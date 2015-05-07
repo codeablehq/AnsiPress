@@ -1,4 +1,5 @@
 ---
+# Install some commonly used plugins that should be on every WordPress install.
 - name: Remove the default "Hello Dolly"
   sudo_user: "{{ server_user }}"
   register: plugin_installed

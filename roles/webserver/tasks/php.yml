@@ -1,4 +1,6 @@
 ---
+# Install PHP with all the modules we will need in order for our WordPress to
+# function properly.
 - name: Install PHP and its modules
   apt: name={{ item }} state=latest update_cache=yes
   with_items:

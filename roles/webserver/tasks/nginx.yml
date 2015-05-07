@@ -1,4 +1,6 @@
 ---
+# Nginx is our web server of choice. Compared to Apache, it's faster with the
+# same resources available, and an increasingly popular choice among sysadmins.
 - name: Install nginx
   apt: name=nginx state=present update_cache=yes
 
@@ -18,6 +20,8 @@
     state: "directory"
     owner: "{{ server_user }}"
 
+# SSL certificate (and the key) will only be copied if you set the 'ssl'
+# variable to 'true'. If you do, make sure you have all the files in place.
 - name: Copy certificates into place
   synchronize:
     src: "../certs/{{ item }}"
@@ -28,6 +32,8 @@
    - "{{ ssl_dhparam }}"
   when: ssl
 
+# Copy the WordPress site's virtual host into place and reload Nginx to
+# register the settings
 - name: Enable new vagrant virtual host
   file:
     src: "/etc/nginx/sites-available/{{ wordpress_site_domain }}.conf"

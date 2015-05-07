@@ -1,6 +1,6 @@
 set daemon 20
 
-set mailserver smtp.gmail.com port 587
+set mailserver {{ smtp_host }} port {{ smtp_port }}
   username "{{ smtp_email }}" password "{{ smtp_password }}"
   using tlsv1
 

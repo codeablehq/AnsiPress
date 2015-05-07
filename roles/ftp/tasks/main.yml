@@ -1,7 +1,10 @@
 ---
+# Install and setup one of the most popular FTP servers: vsFTPd.
 - name: Install vsFTPd
   apt: name=vsftpd state=latest update_cache=yes
 
+# The configuration allows our non-root user to securely FTP to the server and
+# access their home directory (in which our WordPress is installed)
 - name: Copy vsFTPd configuration
   template:
     src: vsftpd.conf.j2

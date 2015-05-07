@@ -1,13 +1,17 @@
 ---
+# Monit is the guard dog of your server, it'll monitor the programs and in case
+# they misbehave (consume too much memory, stop working), it'll restart them
 - name: Install Monit
   apt: name=monit state=latest update_cache=yes
 
+# Some basic configuration so that it connects to the SMTP for sending alerts
 - name: Copy Monit configuration file
   template:
     src: config.j2
     dest: "/etc/monit/conf.d/config"
     mode: 0600
 
+# Configuration files to monitor all the important services on our server
 - name: Copy daemon configuration files
   template:
     src: "{{ item }}"

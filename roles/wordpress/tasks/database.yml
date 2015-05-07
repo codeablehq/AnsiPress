@@ -1,4 +1,5 @@
 ---
+# These tasks create our new WordPress database and a user that can access it.
 - name: Create empty database for WordPress
   mysql_db:
     name: "{{ wordpress_db_name }}"

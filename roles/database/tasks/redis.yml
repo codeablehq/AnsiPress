@@ -1,3 +1,4 @@
 ---
+# Redis is really simple to install, there's no configuration needed, it just runs.
 - name: Install redis
   apt: name=redis-server state=latest update_cache=yes

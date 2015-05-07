@@ -1,4 +1,6 @@
 ---
+# Install WordPress with WP-CLI - a command line tool which allows us to perform
+# most of the WordPress administration without ever logging into dashboard.
 - name: Download WP-CLI and set executable permissions
   get_url:
     url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
