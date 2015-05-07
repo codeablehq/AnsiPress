@@ -2,12 +2,13 @@
 
 Building servers can be hard, but from a system administrator’s point of view, WordPress servers are relatively easy to configure. AnsiPress aims to introduce some basic *Devops* knowledge to WordPress developers, and along the way, help them to automate server management.
 
+Read [this article](https://codeable.io/community/in-pursuit-of-the-perfect-wordpress-server/) for a short introduction to Ansible.
 ## Install dependencies
 
 First you need to have [Ansible](http://www.ansible.com) installed. It’s written in Python (which most operating systems already have), so let’s first install Python’s most popular package manager - *pip*:
 
 ```
-$ sudo easy_install pip 
+$ sudo easy_install pip
 ```
 
 With *pip* installed, we can now use it to install Ansible:
@@ -35,7 +36,7 @@ There are two main playbooks: `setup.yml` and `first_run.yml`. The latter should
 
 `setup.yml` holds all the necessary *roles* to set up the server.
 
-Before you can run it, you need to copy `group_vars/example.yml`: Create a `production.yml` in the same directory and paste the contents of the `example.yml` in then modify them to your liking. 
+Before you can run it, you need to copy `group_vars/example.yml`: Create a `production.yml` in the same directory and paste the contents of the `example.yml` in then modify them to your liking.
 
 Also, edit `inventories/production` and set the ip to point at your (empty) server.
 
@@ -43,7 +44,7 @@ To run the `first_run.yml`, enter the following command (-k asks for **SSH passw
 
 ```
 $ ansible-playbook first_run.yml -i inventories/production -k
-``` 
+```
 
 Then run the `setup.yml` by entering (-K asks for **SUDO password**):
 
