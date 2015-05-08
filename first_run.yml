@@ -56,17 +56,17 @@
       when: can_login_with_root|success
 
     - name: 7.1 Setup ufw (port 22 for SSH)
-      shell: "ufw allow 22/tcp"
+      ufw: rule=allow port=22 proto=tcp
       when: can_login_with_root|success
 
     - name: 7.2 Setup ufw (port 443 for HTTPS)
-      shell: "ufw allow 443/tcp"
+      ufw: rule=allow port=443 proto=tcp
       when: can_login_with_root|success
 
     - name: 7.3 Setup ufw (port 80 for HTTP)
-      shell: "ufw allow 80/tcp"
+      ufw: rule=allow port=80 proto=tcp
       when: can_login_with_root|success
 
     - name: 7.4 Enable ufw
-      shell: "echo 'y' | ufw enable"
+      ufw: state=enabled
       when: can_login_with_root|success
