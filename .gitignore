@@ -1,7 +1,13 @@
 .vagrant
 
+inventories/*
+!inventories/development
+
 roles/webserver/certs/*
 !roles/webserver/certs/.keep
+
+roles/webserver/templates/example*
+!roles/webserver/templates/example.com.conf.j2
 
 group_vars/*
 !group_vars/example.yml

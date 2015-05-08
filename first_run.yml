@@ -1,4 +1,7 @@
 ---
+# This playbook is for security purposes. It prevents root SSH access and
+# sets up the firewall. It creates a non-root user with sudo permissions
+# Run it with: $ ansible-playbook first_run.yml -i inventories/production -k
 - hosts: all
   user: root
   gather_facts: false
@@ -14,13 +17,13 @@
       register: can_login_with_root
       ignore_errors: true
 
-    - name: 2. Create the admin group
+    - name: Create the admin group
       group:
         name: "admin"
         state: "present"
       when: can_login_with_root|success
 
-    - name: 3. Create a webmaster user in the admin group
+    - name: Create a webmaster user in the admin group
       user:
         name: "{{ server_user }}"
         comment: "Server User (non-root)"
@@ -29,13 +32,13 @@
         shell: "/bin/bash"
       when: can_login_with_root|success
 
-    - name: 4. Copy local ssh key for webmaster user
+    - name: Copy local ssh key for webmaster user
       authorized_key:
         user: "{{ server_user }}"
         key: "{{ lookup('file', server_user_ssh_key) }}"
       when: can_login_with_root|success
 
-    - name: 5. Prevent password authentication
+    - name: Prevent password authentication
       lineinfile:
         dest: "/etc/ssh/sshd_config"
         regexp: "^PasswordAuthentication"
@@ -45,7 +48,7 @@
         - Restart SSH
       when: can_login_with_root|success
 
-    - name: 6. Prevent root SSH access
+    - name: Prevent root SSH access
       lineinfile:
         dest: "/etc/ssh/sshd_config"
         regexp: "^PermitRootLogin"

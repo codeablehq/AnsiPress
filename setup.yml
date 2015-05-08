@@ -1,4 +1,6 @@
 ---
+# The main playbook which includes all the roles.
+# Run it with: $ ansible-playbook setup.yml -i inventories/production -K
 - hosts: all
   user: "{{ server_user }}"
   sudo: true

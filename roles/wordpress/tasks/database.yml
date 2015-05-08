@@ -2,15 +2,18 @@
 # These tasks create our new WordPress database and a user that can access it.
 - name: Create empty database for WordPress
   mysql_db:
-    name: "{{ wordpress_db_name }}"
-    encoding: "{{ wordpress_db_encoding }}"
-    collation: "{{ wordpress_db_collation }}"
+    name: "{{ item.value.wordpress_db_name }}"
+    encoding: "{{ item.value.wordpress_db_encoding }}"
+    collation: "{{ item.value.wordpress_db_collation }}"
     state: present
+  with_dict: wordpress_sites
+
 
 - name: Create MySQL user for WordPress
   mysql_user:
-    name: "{{ wordpress_db_username }}"
-    password: "{{ wordpress_db_password }}"
+    name: "{{ item.value.wordpress_db_username }}"
+    password: "{{ item.value.wordpress_db_password }}"
     host: localhost
-    priv: "{{ wordpress_db_name }}.*:ALL"
+    priv: "{{ item.value.wordpress_db_name }}.*:ALL"
     state: present
+  with_dict: wordpress_sites

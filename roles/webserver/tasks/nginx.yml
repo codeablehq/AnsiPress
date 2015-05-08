@@ -9,10 +9,11 @@
     path: "/etc/nginx/sites-enabled/default"
     state: absent
 
-- name: Install the default virtual host
+- name: Install virtual hosts
   template:
-    src: vhost.conf.j2
-    dest: "/etc/nginx/sites-available/{{ wordpress_site_domain }}.conf"
+    src: "{{ item.key }}.conf.j2"
+    dest: "/etc/nginx/sites-available/{{ item.key }}.conf"
+  with_dict: wordpress_sites
 
 - name: Create certificate directory
   file:
@@ -24,20 +25,32 @@
 # variable to 'true'. If you do, make sure you have all the files in place.
 - name: Copy certificates into place
   synchronize:
-    src: "../certs/{{ item }}"
-    dest: "{{ ssl_direcory }}/{{ item }}"
-  with_items:
-   - "{{ ssl_key }}"
-   - "{{ ssl_cert }}"
-   - "{{ ssl_dhparam }}"
-  when: ssl
+    src: "../certs/{{ item.value.ssl_cert }}"
+    dest: "{{ ssl_direcory }}/{{ item.value.ssl_cert }}"
+  with_dict: wordpress_sites
+  when: item.value.ssl
+
+- name: Copy certificate keys into place
+  synchronize:
+    src: "../certs/{{ item.value.ssl_key }}"
+    dest: "{{ ssl_direcory }}/{{ item.value.ssl_key }}"
+  with_dict: wordpress_sites
+  when: item.value.ssl
+
+- name: Copy the dhparam pem file
+  synchronize:
+    src: "../certs/{{ item.value.ssl_dhparam }}"
+    dest: "{{ ssl_direcory }}/{{ item.value.ssl_dhparam }}"
+  with_dict: wordpress_sites
+  when: item.value.ssl
 
 # Copy the WordPress site's virtual host into place and reload Nginx to
 # register the settings
 - name: Enable new vagrant virtual host
   file:
-    src: "/etc/nginx/sites-available/{{ wordpress_site_domain }}.conf"
-    dest: "/etc/nginx/sites-enabled/{{ wordpress_site_domain }}.conf"
+    src: "/etc/nginx/sites-available/{{ item.key }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ item.key }}.conf"
     state: link
+  with_dict: wordpress_sites
   notify:
     - reload nginx

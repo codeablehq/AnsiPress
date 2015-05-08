@@ -3,24 +3,51 @@
 # This is a security measure, and once the 'first_run.yml' is ran, the root
 # will not be able to SSH on the server - which is strongly recommended.
 server_user: webmaster
-server_user_password: webmaster
+
+# Due to OSX's different Python settings, the encrypted password won't work.
+# It's recommended to log in to a Linux server (shouldn't be a problem since
+# you're setting up one anyway) and run the following command (change your_pass):
+# $ python3 -c 'import crypt; print(crypt.crypt("your_pass", salt=crypt.METHOD_SHA512))'
+# On OSX, you could run (but need the 'passlib' installed):
+# $ python -c 'import passlib.hash; print(passlib.hash.sha512_crypt.encrypt("your_pass", rounds=5000))'
+# The example password hash is for "password"
+server_user_password: "$6$pzoeG4NIaSNNA.Sq$kzrk4EmrMy2pbgR253h0ncxPvSqc0KvkCw8justIJ7m2rjv0V6KnHUJemoWAKydlVgKSFE9zji280FMSMmc/Y/"
 server_user_ssh_key: "/Users/Username/.ssh/id_rsa.pub"
-server_user_home_dir: "/home/{{ server_user }}"
 
 # Basic WordPress settings which WP-CLI uses to install WordPress automatically.
 # For the domain, DO NOT include the protocol (HTTP/HTTPS) nor forward slashes.
-wordpress_site_domain: example.com
-wordpress_site_name: Awesome website!
-wordpress_admin_user: Superuser
-wordpress_admin_password: correcthorsebatterystaple # https://xkcd.com/936/
-wordpress_admin_email: user@example.com
+# Note the indentation. This is a dictionary (array), so that you can control
+# multiple WordPress installations on the server
+wordpress_sites:
+  "example.com": # This will be both the domain and the directory for our WP
+    wordpress_site_name: Awesome website!
+    wordpress_admin_user: Superuser
+    wordpress_admin_password: correcthorsebatterystaple # https://xkcd.com/936/
+    wordpress_admin_email: user@example.com
 
-# WordPress database settings
-wordpress_db_name: wordpress
-wordpress_db_username: wordpressuser
-wordpress_db_password: password
-wordpress_db_encoding: utf8
-wordpress_db_collation: utf8_unicode_ci
+    # WordPress database settings
+    wordpress_db_name: wordpress
+    wordpress_db_username: wordpressuser
+    wordpress_db_password: password
+    wordpress_db_encoding: utf8
+    wordpress_db_collation: utf8_unicode_ci
+
+    # SSL settings. If you want to serve your website through HTTPS, then you need to
+    # upload certificates in roles/webserver/certs then change the names of the
+    # certificates in the variables below. To generate dhparam.pem, run this command:
+    # $ openssl dhparam 2048 -out roles/webserver/certs/dhparam.pem
+    # Read more about it: https://wiki.mozilla.org/Security/Server_Side_TLS#DHE_handshake_and_dhparam
+    ssl: true
+    ssl_key: server.key
+    ssl_cert: server.crt
+    ssl_dhparam: dhparam.pem
+
+# Nginx settings: The directory you want your WordPress site to be
+# served from. Keep in mind that the non-root user needs to be able to write to it.
+document_root: "/home/{{ server_user }}/www"
+
+# The directory your SSL certificates (and their corresponding keys) will be saved in.
+ssl_direcory: "/home/{{ server_user }}/certs"
 
 # MySQL settings, we only need to set MySQL root password here.
 mysql_root_password: mysql
@@ -32,18 +59,3 @@ smtp_password: password
 smtp_host: smtp.gmail.com
 smtp_port: 587
 smtp_domain: example.com
-
-# Nginx settings, for now just the directory you want your WordPress site to be
-# served from. Keep in mind that the non-root user needs to be able to write to it.
-document_root: "/home/{{ server_user }}/www/{{ wordpress_site_domain }}"
-
-# SSL settings. If you want to serve your website through HTTPS, then you need to
-# upload certificates in roles/webserver/certs then change the names of the
-# certificates in the variables below. To generate dhparam.pem, run this command:
-# $ openssl dhparam 2048 -out roles/webserver/certs/dhparam.pem
-# Read more about it: https://wiki.mozilla.org/Security/Server_Side_TLS#DHE_handshake_and_dhparam
-ssl: true
-ssl_direcory: "/home/{{ server_user }}/certs"
-ssl_key: server.key
-ssl_cert: server.crt
-ssl_dhparam: dhparam.pem

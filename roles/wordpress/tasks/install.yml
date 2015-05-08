@@ -7,38 +7,42 @@
     dest: /usr/local/bin/wp
     mode: a+x
 
-- name: Create WordPress root directory
+- name: Create WordPress root directories
   file:
-    path: "{{ document_root }}"
+    path: "{{ document_root }}/{{ item.key }}"
     state: "directory"
     owner: "{{ server_user }}"
-    group: "admin"
+  with_dict: wordpress_sites
 
 - name: Download WordPress with WP-CLI
   sudo_user: "{{ server_user }}"
-  shell: "wp core download --path={{ document_root }}"
+  shell: "wp core download --path={{ document_root }}/{{ item.key }}"
   args:
-    creates: "{{ document_root }}/index.php"
+    creates: "{{ document_root }}/{{ item.key }}/index.php"
+  with_dict: wordpress_sites
 
 - name: Create wp-config.php with WP-CLI
   sudo_user: "{{ server_user }}"
-  shell: "wp core config --dbname={{ wordpress_db_name }} --dbuser={{ wordpress_db_username }} --dbpass={{ wordpress_db_password }}"
+  shell: "wp core config --dbname={{ item.value.wordpress_db_name }} --dbuser={{ item.value.wordpress_db_username }} --dbpass={{ item.value.wordpress_db_password }}"
   args:
-    chdir: "{{ document_root }}"
+    chdir: "{{ document_root }}/{{ item.key }}"
     creates: wp-config.php
+  with_dict: wordpress_sites
 
 - name: Install WordPress with WP-CLI
   sudo_user: "{{ server_user }}"
   register: install_result
-  shell: "if ! $(wp core is-installed); then wp core install --title='{{ wordpress_site_name }}' --url='{{ wordpress_site_domain }}' --admin_user='{{ wordpress_admin_user }}' --admin_password='{{ wordpress_admin_password }}' --admin_email='{{ wordpress_admin_email }}'; fi"
+  shell: "if ! $(wp core is-installed); then wp core install --title='{{ item.value.wordpress_site_name }}' --url='{{ item.key }}' --admin_user='{{ item.value.wordpress_admin_user }}' --admin_password='{{ item.value.wordpress_admin_password }}' --admin_email='{{ item.value.wordpress_admin_email }}'; fi"
   args:
-    chdir: "{{ document_root }}"
+    chdir: "{{ document_root }}/{{ item.key }}"
   changed_when: "install_result.rc != 0"
+  with_dict: wordpress_sites
 
 - name: Set proper permissions to uploads directory
   file:
-    path: "{{ document_root }}/wp-content/uploads"
+    path: "{{ document_root }}/{{ item.key }}/wp-content/uploads"
     state: directory
     owner: "{{ server_user }}"
     group: www-data
     mode: g+w
+  with_dict: wordpress_sites
